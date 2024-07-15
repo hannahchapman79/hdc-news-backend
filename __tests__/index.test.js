@@ -26,10 +26,13 @@ describe("/api/topics", () => {
             })
         })
     })
-    test("responds with all topics", () => {
+    test("responds with 404 when endpoint doesn't exist", () => {
         return request(app)
-        .get("/api/topicsss")
+        .get("/api/doesnotexist")
         .expect(404)
+        .then((response) =>{
+            expect(response.body.message).toBe('path not found')
+        })
     })
 });
 
