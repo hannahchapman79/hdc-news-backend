@@ -1,9 +1,10 @@
 const express = require('express')
 const app = express()
-const {getTopics} = require("./controllers/topics.controllers");
+const {getTopics, getEndpoints} = require("./controllers/topics.controllers");
 const { psqlErrorHandler, customErrorHandler, serverErrorHandler } = require('./app-error-handlers')
 
 app.use(express.json())
+app.get('/api', getEndpoints)
 app.get('/api/topics', getTopics)
 
 app.all('*', (req, res, next) => {
