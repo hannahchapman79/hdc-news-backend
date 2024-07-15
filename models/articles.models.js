@@ -14,3 +14,25 @@ exports.selectArticleById = (article_id) => {
           }
       });
 }
+
+exports.selectArticles = () => {
+    return db.query('SELECT * FROM articles;')
+    .then((result) => {
+        const articles = result.rows;
+        const comment_count = 0;
+       const newArticles = articles.map((article) => {
+            return db.query ('SELECT * FROM comments;')
+            .then((commentsResult) => {
+                const comments = commentsResult.rows;
+                comments.forEach((comment) => {
+                    if (article.article_id === comment.article_id) {
+                        article.comment_count ++;
+                    }
+                })
+            })
+        })
+        return newArticles;
+
+    })
+
+}

@@ -53,6 +53,24 @@ describe("GET /api", () => {
 
 describe("/api/articles", () => {
     describe("GET", () => {
+        // test("responds with all articles", () => {
+        //     return request(app)
+        //     .get("/api/articles")
+        //     .expect(200)
+        //     .then((response) => {
+        //         response.body.articles.forEach((article) => {
+        //             expect(article).toHaveProperty("author");
+        //             expect(article).toHaveProperty("title");
+        //             expect(article).toHaveProperty("article_id");
+        //             expect(article).toHaveProperty("topic");
+        //             expect(article).toHaveProperty("created_at");
+        //             expect(article).toHaveProperty("votes");
+        //             expect(article).toHaveProperty("article_img_url");
+        //             expect(article).toHaveProperty("comment_count");
+        //         })
+        //     })
+        //     })
+
         test("responds with an article of the corresponding id", () => {
             return request(app)
             .get("/api/articles/1")
