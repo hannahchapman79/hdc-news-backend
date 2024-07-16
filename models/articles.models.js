@@ -16,23 +16,27 @@ exports.selectArticleById = (article_id) => {
 }
 
 exports.selectArticles = () => {
-    return db.query('SELECT * FROM articles;')
+    return db.query('SELECT article_id, title, topic, author, created_at, votes, article_img_url FROM articles ORDER BY created_at DESC;')
     .then((result) => {
         const articles = result.rows;
-        const comment_count = 0;
-       const newArticles = articles.map((article) => {
-            return db.query ('SELECT * FROM comments;')
-            .then((commentsResult) => {
-                const comments = commentsResult.rows;
-                comments.forEach((comment) => {
-                    if (article.article_id === comment.article_id) {
-                        article.comment_count ++;
-                    }
-                })
-            })
-        })
-        return newArticles;
-
+        articles.forEach(article => {
+            article.comment_count = 0;
+        });
+        const articlePromises = articles.map(article => {
+            return db.query('SELECT * FROM comments WHERE article_id = $1;', [article.article_id])
+                .then(commentsResult => {
+                    commentsResult.rows.forEach(comment => {
+                        if (comment.article_id === article.article_id) {
+                            article.comment_count++;
+                        }
+                    });
+                    return article; 
+                });
+        });
+        return Promise.all(articlePromises)
+        .then(updatedArticles => {
+            return updatedArticles; 
+        });
     })
 
 }
