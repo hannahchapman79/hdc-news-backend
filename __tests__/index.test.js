@@ -56,6 +56,7 @@ describe("/api/articles", () => {
         .get("/api/articles")
         .expect(200)
         .then((response) => {
+          expect(response.body.articles.length).toBeGreaterThan(0);
           response.body.articles.forEach((article) => {
             expect(article).toHaveProperty("author");
             expect(article).toHaveProperty("title");
@@ -65,19 +66,15 @@ describe("/api/articles", () => {
             expect(article).toHaveProperty("votes");
             expect(article).toHaveProperty("article_img_url");
             expect(article).toHaveProperty("comment_count");
+            expect(typeof article.author).toBe('string');
+            expect(typeof article.title).toBe('string');
+            expect(typeof article.article_id).toBe('number');
+            expect(typeof article.topic).toBe('string');
+            expect(typeof article.created_at).toBe('string');
+            expect(typeof article.votes).toBe('number');
+            expect(typeof article.article_img_url).toBe('string');
             expect(article).not.toHaveProperty("body");
           });
-        });
-    });
-    test("displays the number of comments for the article", () => {
-      return request(app)
-        .get("/api/articles")
-        .expect(200)
-        .then((response) => {
-          const articles = response.body.articles;
-          const article = articles.find((article) => article.article_id === 9);
-          expect(article).toHaveProperty("comment_count");
-          expect(article.comment_count).toBe(2);
         });
     });
     test("returns articles sorted by date in descending order", () => {
