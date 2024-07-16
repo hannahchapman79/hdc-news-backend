@@ -139,4 +139,52 @@ describe("/api/articles/:articles_id", () => {
         expect(response.body.message).toEqual("invalid id type");
       });
   });
+
+  test("responds with an array of comments for the given article_id ", () => {
+    return request(app)
+      .get("/api/articles/6/comments")
+      .expect(200)
+      .then((response) => {
+        expect(response.body.comments.length).toBeGreaterThan(0);
+        response.body.comments.forEach((comment) => {
+        expect(comment.votes).toBe(1);
+        expect(comment.created_at).toBe('2020-10-11T15:23:00.000Z');
+        expect(comment.author).toBe('butter_bridge');
+        expect(comment.body).toBe('This is a bad article name');
+        expect(comment.article_id).toBe(6);
+          })
+      });
+  });
+  test("returns comments sorted by date in descending order", () => {
+    return request(app)
+      .get("/api/articles/1/comments")
+      .expect(200)
+      .then((response) => {
+        const comments = response.body.comments;
+        expect(comments).toBeSortedBy('created_at', {descending: true})  
+      });
+  });
+  test("responds with 400 error when the id is invalid", () => {
+    return request(app)
+      .get("/api/articles/not-an-article/comments")
+      .expect(400)
+      .then((response) => {
+        expect(response.body.message).toEqual("invalid id type");
+      });
+  });
+  test("responds with 404 error when id is valid but doesn't exist in the db", () => {
+    return request(app)
+      .get("/api/articles/29999/comments")
+      .expect(404)
+      .then((response) => {
+        expect(response.body.message).toEqual("article does not exist");
+      });
+  });
+  test("responds with an empty array if the article does not have any comments", () => {
+    return request(app)
+      .get("/api/articles/13/comments")
+      .then((response) => {
+        expect(response.body.comments).toEqual([]);
+      });
+  });
 });
