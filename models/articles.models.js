@@ -1,5 +1,6 @@
 const db = require("../db/connection");
 const checkArticleExists = require("../check-article-exists");
+const checkUserExists = require("../check-user-exists");
 
 exports.selectArticleById = (article_id) => {
   return db
@@ -71,11 +72,11 @@ exports.selectArticleComments = (article_id) => {
   });
 };
 
-exports.sendComment = (article_id, newComment) => {
+exports.insertComment = (article_id, newComment) => {
   if (!newComment.username || !newComment.body) {
     return Promise.reject({
       status: 400,
-      message: `bad request`,
+      message: "bad request",
     });
   }
   return checkArticleExists(article_id).then((exists) => {
@@ -85,14 +86,23 @@ exports.sendComment = (article_id, newComment) => {
         message: "article does not exist",
       });
     }
-    return db
-      .query(
-        "INSERT INTO comments (author, body, article_id, votes) VALUES ($1, $2, $3, $4) RETURNING *",
-        [newComment.username, newComment.body, article_id, 0]
-      )
-      .then((result) => {
-        return result.rows[0];
-      });
+    return checkUserExists(newComment.username).then((userExists) => {
+      if (!userExists) {
+        return Promise.reject({
+          status: 404,
+          message: "user does not exist",
+        });
+      } else {
+        return db
+          .query(
+            "INSERT INTO comments (author, body, article_id, votes) VALUES ($1, $2, $3, $4) RETURNING *",
+            [newComment.username, newComment.body, article_id, 0]
+          )
+          .then((result) => {
+            return result.rows[0];
+          });
+      }
+    });
   });
 };
 

@@ -192,7 +192,7 @@ describe("/api/articles/:articles_id", () => {
 
 describe("/api/articles/:article_id/comments", () => {
   describe("POST", () => {
-    test("adds comment for a given article and responds with the comment", () => {
+    test("adds comment for a given article and responds with the comment and 201 response code", () => {
       const newComment = {
         username: "butter_bridge",
         body: "I didn't find this article very interesting",
@@ -203,12 +203,11 @@ describe("/api/articles/:article_id/comments", () => {
         .expect(201)
         .then((response) => {
           const comment = response.body.comment;
-          expect(typeof comment.author).toBe("string");
-          expect(typeof comment.body).toBe("string");
           expect(comment.author).toBe("butter_bridge");
           expect(comment.body).toBe(
             "I didn't find this article very interesting"
-          );
+          )
+          expect(comment.comment_id).toEqual(expect.any(Number));
         });
     });
     test("responds with 404 error when id is present but doesn't exist in the db", () => {
@@ -236,6 +235,19 @@ describe("/api/articles/:article_id/comments", () => {
           expect(response.body.message).toEqual("bad request");
         });
     });
+    test("responds with 404 error when the user is not present in the db", () => {
+        const newComment = {
+          username: "iloveharrypotter",
+          body: "I didn't find this article very interesting",
+        };
+        return request(app)
+          .post("/api/articles/6/comments")
+          .send(newComment)
+          .expect(404)
+          .then((response) => {
+            expect(response.body.message).toEqual("user does not exist");
+          });
+      });
   });
 });
 
