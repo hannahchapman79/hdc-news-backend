@@ -45,7 +45,7 @@ exports.selectArticles = () => {
 };
 
 exports.selectArticleComments = (article_id) => {
-    const query = `
+  const query = `
     SELECT 
         *
     FROM
@@ -54,21 +54,44 @@ exports.selectArticleComments = (article_id) => {
         article_id = $1
     ORDER BY
         created_at DESC;
-    `
-  return db
-    .query(query, [article_id])
-    .then((result) => {
-        if (result.rows.length === 0) {
-            return checkArticleExists(article_id).then(exists => {
-                if (!exists) {
-                    return Promise.reject({
-                        status: 404,
-                        message: `article does not exist`,
-                    });
-                }
-                return result.rows;
-            });
+    `;
+  return db.query(query, [article_id]).then((result) => {
+    if (result.rows.length === 0) {
+      return checkArticleExists(article_id).then((exists) => {
+        if (!exists) {
+          return Promise.reject({
+            status: 404,
+            message: `article does not exist`,
+          });
         }
         return result.rows;
-      })
+      });
     }
+    return result.rows;
+  });
+};
+
+exports.sendComment = (article_id, newComment) => {
+  if (!newComment.username || !newComment.body) {
+    return Promise.reject({
+      status: 400,
+      message: `bad request`,
+    });
+  }
+  return checkArticleExists(article_id).then((exists) => {
+    if (!exists) {
+      return Promise.reject({
+        status: 404,
+        message: "article does not exist",
+      });
+    }
+    return db
+      .query(
+        "INSERT INTO comments (author, body, article_id, votes) VALUES ($1, $2, $3, $4) RETURNING *",
+        [newComment.username, newComment.body, article_id, 0]
+      )
+      .then((result) => {
+        return result.rows[0];
+      });
+  });
+};
