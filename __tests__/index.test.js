@@ -188,3 +188,50 @@ describe("/api/articles/:articles_id", () => {
       });
   });
 });
+
+describe("/api/articles/:article_id/comments", () => {
+    describe("POST", () => {
+      test("adds comment for a given article and responds with the comment", () => {
+        const newComment = {
+            username: "butter_bridge",
+            body: "I didn't find this article very interesting"
+        }
+        return request(app)
+          .post("/api/articles/6/comments")
+          .send(newComment)
+          .expect(201)
+          .then((response) => {
+            const comment = response.body.comment;
+              expect(typeof comment.author).toBe("string");
+              expect(typeof comment.body).toBe("string");
+              expect(comment.author).toBe("butter_bridge");
+              expect(comment.body).toBe("I didn't find this article very interesting");
+          });
+      });
+      test("responds with 404 error when id is present but doesn't exist in the db", () => {
+        const newComment = {
+            username: "butter_bridge",
+            body: "I didn't find this article very interesting"
+        }
+        return request(app)
+          .post("/api/articles/6000/comments")
+          .send(newComment)
+          .expect(404)
+          .then((response) => {
+            expect(response.body.message).toEqual("article does not exist");
+          });
+      });
+      test("responds with 400 error when the comment is missing properties", () => {
+        const newComment = {
+            username: "butter_bridge",
+        }
+        return request(app)
+          .post("/api/articles/6/comments")
+          .send(newComment)
+          .expect(400)
+          .then((response) => {
+            expect(response.body.message).toEqual("bad request");
+          });
+      });
+    });
+  });
