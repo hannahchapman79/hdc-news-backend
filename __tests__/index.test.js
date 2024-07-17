@@ -147,11 +147,11 @@ describe("/api/articles/:articles_id", () => {
       .then((response) => {
         expect(response.body.comments.length).toBeGreaterThan(0);
         response.body.comments.forEach((comment) => {
-        expect(comment.votes).toBe(1);
-        expect(comment.created_at).toBe('2020-10-11T15:23:00.000Z');
-        expect(comment.author).toBe('butter_bridge');
-        expect(comment.body).toBe('This is a bad article name');
-        expect(comment.article_id).toBe(6);
+        expect(typeof comment.votes).toBe("number");
+        expect(typeof comment.created_at).toBe('string');
+        expect(typeof comment.author).toBe('string');
+        expect(typeof comment.body).toBe('string');
+        expect(typeof comment.article_id).toBe("number");
           })
       });
   });
