@@ -72,7 +72,9 @@ exports.selectArticles = (sort_by = "created_at", order = "desc", topic) => {
               message: `topic does not exist`,
             });
           }
-          return result.rows;
+          else {
+            return [];
+          }
         });
       }
       return result.rows;

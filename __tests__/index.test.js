@@ -109,7 +109,7 @@ describe("/api/articles", () => {
           .expect(200)
           .then((response) => {
             const articles = response.body.articles;
-            expect(articles).toBeSortedBy("article_id");
+            expect(articles).toBeSortedBy("article_id", {ascending: true});
           });
       });
       test("responds with 400 error for an invalid sort-by column", () => {
@@ -142,10 +142,17 @@ describe("/api/articles", () => {
       });
       test("responds with 404 error for a topic that does not exist", () => {
         return request(app)
-          .get("/api/articles?topic=orangecats/")
+          .get("/api/articles?topic=orangecats")
           .expect(404)
           .then((response) => {
             expect(response.body.message).toBe("topic does not exist");
+          });
+      });
+      test("responds with empty array if topic exists but doesn't have any articles", () => {
+        return request(app)
+          .get("/api/articles?topic=paper")
+          .then((response) => {
+            expect(response.body.articles).toEqual([]);
           });
       });
   });
