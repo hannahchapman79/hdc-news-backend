@@ -1,6 +1,7 @@
 const db = require("../db/connection");
 const checkArticleExists = require("../check-article-exists");
 const checkUserExists = require("../check-user-exists");
+const checkTopicExists = require("../check-topic-exists")
 
 exports.selectArticleById = (article_id) => {
   return db
@@ -17,7 +18,7 @@ exports.selectArticleById = (article_id) => {
     });
 };
 
-exports.selectArticles = (sort_by = "created_at", order = "desc") => {
+exports.selectArticles = (sort_by = "created_at", order = "desc", topic) => {
   const validSortBys = [
     "article_id",
     "title",
@@ -36,7 +37,9 @@ exports.selectArticles = (sort_by = "created_at", order = "desc") => {
 
   if (!validSortBys.includes(sort_by)) {
     return Promise.reject({ status: 400, message: "bad request" });
-  } else {
+  } 
+
+  else {
     let sqlString = `
   SELECT
   articles.article_id, 
@@ -52,13 +55,26 @@ exports.selectArticles = (sort_by = "created_at", order = "desc") => {
   LEFT JOIN 
   comments
   ON 
-  articles.article_id = comments.article_id
-  GROUP BY 
-  articles.article_id`;
+  articles.article_id = comments.article_id`
 
-    sqlString += ` ORDER BY articles.${sort_by} ${order};`;
+  if (topic) {
+    sqlString += ` WHERE articles.topic = '${topic}'`;
+  }
+
+  sqlString += ` GROUP BY articles.article_id ORDER BY articles.${sort_by} ${order};`;
 
     return db.query(sqlString).then((result) => {
+      if (result.rows.length === 0) {
+        return checkTopicExists(topic).then((exists) => {
+          if (!exists) {
+            return Promise.reject({
+              status: 404,
+              message: `topic does not exist`,
+            });
+          }
+          return result.rows;
+        });
+      }
       return result.rows;
     });
   }

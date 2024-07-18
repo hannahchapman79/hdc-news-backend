@@ -128,6 +128,26 @@ describe("/api/articles", () => {
             expect(response.body.message).toBe("bad request");
           });
       });
+      test("returns articles that match the topic query", () => {
+        return request(app)
+          .get("/api/articles?topic=cats")
+          .expect(200)
+          .then((response) => {
+            const articles = response.body.articles;
+            expect(articles.length).toBeGreaterThan(0);
+            articles.forEach((article) => {
+                expect(article.topic).toEqual("cats");
+            })
+          });
+      });
+      test("responds with 404 error for a topic that does not exist", () => {
+        return request(app)
+          .get("/api/articles?topic=orangecats/")
+          .expect(404)
+          .then((response) => {
+            expect(response.body.message).toBe("topic does not exist");
+          });
+      });
   });
 });
 
