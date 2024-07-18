@@ -168,10 +168,10 @@ describe("/api/articles/:articles_id", () => {
         expect(article).toHaveProperty("title");
         expect(article).toHaveProperty("author");
         expect(article).toHaveProperty("article_id");
-        expect(article).toHaveProperty("body");
         expect(article).toHaveProperty("topic");
         expect(article).toHaveProperty("created_at");
         expect(article).toHaveProperty("votes");
+        expect(article).toHaveProperty("body");
         expect(article).toHaveProperty("article_img_url");
         expect(article.article_id).toBe(1);
         expect(article.title).toBe("Living in the shadow of a great man");
@@ -183,6 +183,15 @@ describe("/api/articles/:articles_id", () => {
         expect(article.article_img_url).toBe(
           "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700"
         );
+      });
+  });
+  test("responds with an article of the corresponding id and displays its comment count", () => {
+    return request(app)
+      .get("/api/articles/1")
+      .expect(200)
+      .then((response) => {
+        const article = response.body.article;
+        expect(article).toHaveProperty("comment_count");
       });
   });
   test("responds with 404 error when id is valid but doesn't exist in the db", () => {
