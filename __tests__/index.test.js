@@ -312,3 +312,23 @@ describe("/api/articles/:article_id", () => {
       });
   });
 });
+
+
+describe("/api/comments/:comment_id", () => {
+    describe("DELETE /api/comments/:comment_id", () => {
+      test("responds with 204 status and deletes the comment by comment id", () => {
+        return request(app)
+          .delete("/api/comments/8")
+          .expect(204)
+      });
+      test("responds with 404 error when the given comment id doesn't exist in the db", () => {
+        return request(app)
+          .delete("/api/comments/800")
+          .expect(404)
+          .then((response) => {
+            expect(response.body.message).toEqual("comment does not exist");
+          });
+      });
+    });
+  });
+  
