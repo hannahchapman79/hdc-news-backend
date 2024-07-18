@@ -12,7 +12,9 @@ exports.getArticleById = (req, res, next) => {
 }
 
 exports.getArticles = (req, res, next) => {
-    selectArticles()
+  const {sort_by} = req.query;
+  const {order} = req.query;
+    selectArticles(sort_by, order)
     .then((articles) => {
         res.status(200).send({ articles });
       })

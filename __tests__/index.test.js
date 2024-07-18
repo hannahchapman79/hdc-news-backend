@@ -94,6 +94,40 @@ describe("/api/articles", () => {
           expect(response.body.message).toBe("path not found");
         });
     });
+    test("returns articles sorted by the given valid column", () => {
+        return request(app)
+          .get("/api/articles?sort_by=votes")
+          .expect(200)
+          .then((response) => {
+            const articles = response.body.articles;
+            expect(articles).toBeSortedBy("votes", { descending: true });
+          });
+      });
+      test("returns articles sorted by the given valid column ascending", () => {
+        return request(app)
+          .get("/api/articles?sort_by=article_id&order=asc")
+          .expect(200)
+          .then((response) => {
+            const articles = response.body.articles;
+            expect(articles).toBeSortedBy("article_id");
+          });
+      });
+      test("responds with 400 error for an invalid sort-by column", () => {
+        return request(app)
+          .get("/api/articles?sort_by=article_code")
+          .expect(400)
+          .then((response) => {
+            expect(response.body.message).toBe("bad request");
+          });
+      });
+      test("responds with 400 error for an invalid order by clause", () => {
+        return request(app)
+          .get("/api/articles?sort_by=article_id&order=alphabetical")
+          .expect(400)
+          .then((response) => {
+            expect(response.body.message).toBe("bad request");
+          });
+      });
   });
 });
 
@@ -365,3 +399,4 @@ describe("/api/comments/:comment_id", () => {
       });
     });
   });
+
