@@ -257,14 +257,23 @@ describe("/api/articles/:article_id", () => {
       const updateVote = {
         inc_votes: 1,
       };
+      let previousVotes;
       return request(app)
+      .get("/api/articles/1")
+      .then((response) => {
+        previousVotes = response.body.article.votes;
+        
+        return request(app)
         .patch("/api/articles/1")
         .send(updateVote)
         .expect(200)
+    })
         .then((response) => {
           const article = response.body.updatedArticle;
           expect(typeof article.votes).toBe("number");
           expect(typeof article.title).toBe("string");
+          expect(article.votes).toBe(previousVotes + updateVote.inc_votes);
+
         });
     });
     test("responds with 400 bad request when inc_votes is not provided", () => {
@@ -287,6 +296,18 @@ describe("/api/articles/:article_id", () => {
           .expect(404)
           .then((response) => {
             expect(response.body.message).toEqual("article does not exist");
+          });
+      });
+      test("responds with 400 invalid id type when the article id is invalid", () => {
+        const updateVote = {
+            inc_votes: 1,
+          };
+        return request(app)
+          .patch("/api/articles/not-a-number")
+          .send(updateVote)
+          .expect(400)
+          .then((response) => {
+            expect(response.body.message).toEqual("invalid id type");
           });
       });
   });
