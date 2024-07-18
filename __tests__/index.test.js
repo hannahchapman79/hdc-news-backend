@@ -315,7 +315,7 @@ describe("/api/articles/:article_id", () => {
 
 
 describe("/api/comments/:comment_id", () => {
-    describe("DELETE /api/comments/:comment_id", () => {
+    describe("DELETE", () => {
       test("responds with 204 status and deletes the comment by comment id", () => {
         return request(app)
           .delete("/api/comments/8")
@@ -332,3 +332,28 @@ describe("/api/comments/:comment_id", () => {
     });
   });
   
+  describe("/api/users", () => {
+    describe("GET", () => {
+      test("responds with all users", () => {
+        return request(app)
+        .get("/api/users")
+        .expect(200)
+        .then((response) => {
+          expect(response.body.users.length).toBeGreaterThan(0);
+          response.body.users.forEach((user) => {
+            expect(typeof user.name).toBe("string");
+            expect(typeof user.username).toBe("string");
+            expect(typeof user.avatar_url).toBe("string");
+          });
+        });
+      });
+      test("responds with 404 when endpoint doesn't exist", () => {
+        return request(app)
+          .get("/api/doesnotexist")
+          .expect(404)
+          .then((response) => {
+            expect(response.body.message).toBe("path not found");
+          });
+      });
+    });
+  });
