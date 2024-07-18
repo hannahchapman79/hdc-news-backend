@@ -329,6 +329,14 @@ describe("/api/comments/:comment_id", () => {
             expect(response.body.message).toEqual("comment does not exist");
           });
       });
+      test("responds with 400 bad request when the given an invalid comment id", () => {
+        return request(app)
+          .delete("/api/comments/not-a-number")
+          .expect(400)
+          .then((response) => {
+            expect(response.body.message).toEqual("invalid id type");
+          });
+      });
     });
   });
   
