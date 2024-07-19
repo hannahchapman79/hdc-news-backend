@@ -1,21 +1,18 @@
 const express = require('express')
 const app = express()
-const {getTopics, getEndpoints} = require("./controllers/topics.controllers");
-const { getArticleById, getArticles, getArticleComments, postComment, updateVote } = require("./controllers/articles.controllers")
-const { deleteComment } = require("./controllers/comments.controllers");
-const { getUsers } = require("./controllers/users.controllers");
+const articlesRouter = require('./routes/articles.router');
+const commentsRouter = require('./routes/comments.router');
+const topicsRouter = require('./routes/topics.router');
+const usersRouter = require('./routes/users.router');
+const {getEndpoints} = require('./controllers/topics.controllers')
 
 app.use(express.json())
 
-app.get('/api', getEndpoints)
-app.get('/api/topics', getTopics)
-app.get('/api/articles', getArticles)
-app.get('/api/articles/:article_id', getArticleById)
-app.get('/api/articles/:article_id/comments', getArticleComments)
-app.post('/api/articles/:article_id/comments', postComment)
-app.patch('/api/articles/:article_id', updateVote)
-app.delete('/api/comments/:comment_id', deleteComment)
-app.get('/api/users', getUsers);
+app.use('/api/topics', topicsRouter); 
+app.use('/api/articles', articlesRouter); 
+app.use('/api/comments', commentsRouter);
+app.use('/api/users', usersRouter);
+app.get("/api", getEndpoints)
 
 app.all('*', (req, res, next) => {
     res.status(404).send({message: 'path not found'})
@@ -36,8 +33,6 @@ app.use((err, req, res, next) => {
         next(err)
     }
 })
-
-
 
 
 module.exports = app;
