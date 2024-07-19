@@ -1,8 +1,45 @@
-# Northcoders News API
+# Backend Northcoders News
 
-A note for anyone who wishes to clone this project and run it locally: in order to successfully connect to the two databases locally, you must add 2 .env files assigning a test and development database using "PGDATABASE=".
+Hosted version: https://be-nc-news-flqs.onrender.com
 
+## Description
 
+This project is the backend for a news application, including both the API and database. The API is designed to access application data programmatically, mimicing the construction of a real-world backend service (similar to Reddit) that supports front-end architecture. This project was developed as part of the Northcoders software development bootcamp.
+
+## Getting Started
+
+### Dependencies
+
+**Development Dependencies**
+Husky: ^8.0.2
+Jest: ^27.5.1
+Jest-Sorted: ^1.0.14
+Supertest: ^6.3.4
+
+**Dependencies**
+PG-Format: ^1.0.4
+Dotenv: ^16.3.1
+Express: ^4.18.2
+PG: ^8.7.3
+
+**Requirements**
+Postgres: v14.10
+Node.js: v21.1.0
+
+### Installation
+
+1. Clone the repository
+2. Run "npm install"
+
+### Environment Variables
+3. Create Environment Files: Create two .env files: .env.test and .env.development. Each file should contain the appropriate database name for that environment.
+
+### Setting Up the Database
+4. Install dependencies outlined above
+5. Run the commands "npm run setup-dbs" and "npm run seed"
+
+### Running Test Suite
+6. Run "npm run test"
 
 --- 
 
