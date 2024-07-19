@@ -431,3 +431,30 @@ describe("/api/users", () => {
     });
   });
 });
+
+describe("/api/users/:username", () => {
+  describe("GET", () => {
+    test("responds with user by given username", () => {
+      return request(app)
+        .get("/api/users/lurker")
+        .expect(200)
+        .then((response) => {
+          const user = response.body.user[0];
+            expect(typeof user.name).toBe("string");
+            expect(typeof user.username).toBe("string");
+            expect(typeof user.avatar_url).toBe("string");
+            expect(user.name).toBe("do_nothing");
+            expect(user.username).toBe("lurker");
+            expect(user.avatar_url).toBe("https://www.golenbock.com/wp-content/uploads/2015/01/placeholder-user.png");
+        });
+    });
+    test("responds with 404 when endpoint doesn't exist", () => {
+      return request(app)
+        .get("/api/users/ilovecats")
+        .expect(404)
+        .then((response) => {
+          expect(response.body.message).toBe("user does not exist");
+        });
+    });
+  });
+});
