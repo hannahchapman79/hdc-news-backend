@@ -30,83 +30,114 @@
     "description": "serves an article with the corresponding id",
     "queries": ["author", "topic", "sort_by", "order"],
     "exampleResponse": {
-        "article_id": 1,
-        "title": "Living in the shadow of a great man",
-        "topic": "mitch",
-        "author": "butter_bridge",
-        "body": "I find this existence challenging",
-        "created_at": "2020-07-09T20:11:00.000Z",
-        "votes": 100,
-        "article_img_url": "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
-        "comment_count": 11
-      }
+      "article_id": 1,
+      "title": "Living in the shadow of a great man",
+      "topic": "mitch",
+      "author": "butter_bridge",
+      "body": "I find this existence challenging",
+      "created_at": "2020-07-09T20:11:00.000Z",
+      "votes": 100,
+      "article_img_url": "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+      "comment_count": 11
+    }
+  },
+  "GET /api/articles/6/comments": {
+    "description": "serves the comments for a given article_id",
+    "queries": ["author", "topic", "sort_by", "order"],
+    "exampleResponse": {
+      "comment_id": 16,
+      "body": "This is a bad article name",
+      "article_id": 6,
+      "author": "butter_bridge",
+      "votes": 1,
+      "created_at": "2020-10-11T15:23:00.000Z"
+    }
+  },
+  "POST /api/articles/6/comments": {
+    "description": "adds a comment for a given article and responds with the comment",
+    "exampleResponse": {
+      "comment_id": 19,
+      "body": "I didn't find this article very interesting",
+      "article_id": 6,
+      "author": "butter_bridge",
+      "votes": 0,
+      "created_at": "2024-07-17T11:20:50.166Z"
+    }
+  },
+  "PATCH /api/articles/1": {
+    "description": "updates a given article by incrementing or decrementing the votes",
+    "exampleRequest": {
+      "inc_votes": 1
     },
-    "GET /api/articles/6/comments": {
-      "description": "serves the comments for a given article_id",
-      "queries": ["author", "topic", "sort_by", "order"],
-      "exampleResponse": {
-          "comment_id": 16,
-          "body": "This is a bad article name",
-          "article_id": 6,
-          "author": "butter_bridge",
-          "votes": 1,
-          "created_at": "2020-10-11T15:23:00.000Z"
+    "exampleResponse": {
+      "article_id": 1,
+      "title": "Living in the shadow of a great man",
+      "topic": "mitch",
+      "author": "butter_bridge",
+      "body": "I find this existence challenging",
+      "created_at": "2020-07-09T20:11:00.000Z",
+      "votes": 101,
+      "article_img_url": "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700"
+    }
+  },
+  "DELETE /api/comments/8": {
+    "description": "deletes a comment by comment id",
+    "exampleResponse": {
+      "status": 204,
+      "content": null
+    }
+  },
+  "GET /api/users": {
+    "description": "serves an array of all users",
+    "queries": [],
+    "exampleResponse": {
+      "users": [
+        {
+          "username": "butter_bridge",
+          "name": "jonny",
+          "avatar_url": "https://www.healthytherapies.com/wp-content/uploads/2016/06/Lime3.jpg"
         }
-      },
-      "POST /api/articles/6/comments": {
-        "description": "adds a comment for a given article and responds with the comment",
-        "exampleResponse": {
-            "comment_id": 19,
-            "body": "I didn't find this article very interesting",
-            "article_id": 6,
-            "author": "butter_bridge",
-            "votes": 0,
-            "created_at": "2024-07-17T11:20:50.166Z"
-          }
-        },
-        "PATCH /api/articles/1": {
-          "description": "updates a given article by incrementing or decrementing the votes",
-          "exampleRequest": {
-            "inc_votes": 1
-          },
-          "exampleResponse": {
-            "article_id": 1,
-            "title": "Living in the shadow of a great man",
-            "topic": "mitch",
-            "author": "butter_bridge",
-            "body": "I find this existence challenging",
-            "created_at": "2020-07-09T20:11:00.000Z",
-            "votes": 101,
-            "article_img_url": "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700"
-            }
-          },
-          "DELETE /api/comments/8": {
-            "description": "deletes a comment by comment id",
-            "exampleResponse": {
-              "status": 204,
-              "content": null
-              }
-            },
-            "GET /api/users": {
-              "description": "serves an array of all users",
-              "queries": [],
-              "exampleResponse": {
-                "users": [{
-                  "username": "butter_bridge",
-                  "name": "jonny",
-                  "avatar_url": "https://www.healthytherapies.com/wp-content/uploads/2016/06/Lime3.jpg"
-                }]
-              }
-            },
-            "GET /api/users/:username": {
-              "description": "retrieves the details of a user specified by the given username",
-              "exampleResponse": {
-                "users": [{
-                  "username": "butter_bridge",
-                  "name": "jonny",
-                  "avatar_url": "https://www.healthytherapies.com/wp-content/uploads/2016/06/Lime3.jpg"
-                }]
-              }
-            }
+      ]
+    }
+  },
+  "GET /api/users/:username": {
+    "description": "retrieves the details of a user specified by the given username",
+    "exampleResponse": {
+      "users": [
+        {
+          "username": "butter_bridge",
+          "name": "jonny",
+          "avatar_url": "https://www.healthytherapies.com/wp-content/uploads/2016/06/Lime3.jpg"
+        }
+      ]
+    }
+  },
+  "GET /api/comments/:comment_id": {
+    "description": "retrieves the details of a comment specified by the given comment id",
+    "exampleResponse":
+        {
+          "body": "The beautiful thing about treasure is that it exists. Got to find out what kind of sheets these are; not cotton, not rayon, silky.",
+          "votes": 14,
+          "author": "butter_bridge",
+          "article_id": 1,
+          "created_at": 1604113380000
+        }
+  },
+  "PATCH /api/comments/:comment_id": {
+    "description": "updates a given comment by incrementing or decrementing the votes",
+    "exampleRequest": {
+      "inc_votes": 1
+    },
+    "exampleResponse": {
+      "updatedComment": [
+        {
+          "body": "The beautiful thing about treasure is that it exists. Got to find out what kind of sheets these are; not cotton, not rayon, silky.",
+          "votes": 15,
+          "author": "butter_bridge",
+          "article_id": 1,
+          "created_at": 1604113380000
+        }
+      ]
+    }
   }
-
+}

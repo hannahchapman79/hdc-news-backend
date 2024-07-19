@@ -404,6 +404,95 @@ describe("/api/comments/:comment_id", () => {
         });
     });
   });
+  describe("PATCH", () => {
+    test("updates a given comment by incrementing or decrementing the votes", () => {
+      const updateVote = {
+        inc_votes: 1,
+      };
+      let previousVotes;
+      return request(app)
+        .get("/api/comments/2")
+        .then((response) => {
+          previousVotes = response.body.comment[0].votes;
+          return request(app)
+            .patch("/api/comments/2")
+            .send(updateVote)
+            .expect(200);
+        })
+        .then((response) => {
+          const comment = response.body.updatedComment;
+          expect(typeof comment.votes).toBe("number");
+          expect(comment.votes).toBe(previousVotes + updateVote.inc_votes);
+        });
+    });
+    test("responds with 400 bad request when inc_votes is not provided", () => {
+      const updateVote = {};
+      return request(app)
+      .patch("/api/comments/1")
+      .send(updateVote)
+      .expect(400)
+      .then((response) => {
+        expect(response.body.message).toEqual("bad request");
+      });
+    });
+    test("responds with 404 not found when an comment with the given id does not exist", () => {
+      const updateVote = {
+        inc_votes: 2,
+      };
+      return request(app)
+      .patch("/api/comments/1999")
+      .send(updateVote)
+      .expect(404)
+      .then((response) => {
+        expect(response.body.message).toEqual("comment does not exist");
+      });
+    });
+    test("responds with 400 invalid id type when the comment id is invalid", () => {
+      const updateVote = {
+        inc_votes: 1,
+      };
+      return request(app)
+      .patch("/api/comments/not-a-number")
+      .send(updateVote)
+      .expect(400)
+      .then((response) => {
+        expect(response.body.message).toEqual("invalid id type");
+      });
+    });
+  });
+  });
+  describe("GET", () => {
+  test("responds with an comment of the corresponding id", () => {
+    return request(app)
+      .get("/api/comments/2")
+      .expect(200)
+      .then((response) => {
+        const comment = response.body.comment[0];
+        expect(comment).toHaveProperty("body");
+        expect(comment).toHaveProperty("votes");
+        expect(comment).toHaveProperty("author");
+        expect(comment).toHaveProperty("comment_id");
+        expect(comment).toHaveProperty("article_id");
+        expect(comment).toHaveProperty("created_at");
+        expect(comment.comment_id).toBe(2);
+      });
+  });
+  test("responds with 404 when comment doesn't exist", () => {
+    return request(app)
+      .get("/api/comments/8888")
+      .expect(404)
+      .then((response) => {
+        expect(response.body.message).toBe("comment does not exist");
+      });
+  });
+  test("responds with 400 error when comment id is an invalid type", () => {
+    return request(app)
+      .get("/api/comments/i-love-cats")
+      .expect(400)
+      .then((response) => {
+        expect(response.body.message).toBe("invalid id type");
+      });
+  });
 });
 
 describe("/api/users", () => {
@@ -440,15 +529,17 @@ describe("/api/users/:username", () => {
         .expect(200)
         .then((response) => {
           const user = response.body.user[0];
-            expect(typeof user.name).toBe("string");
-            expect(typeof user.username).toBe("string");
-            expect(typeof user.avatar_url).toBe("string");
-            expect(user.name).toBe("do_nothing");
-            expect(user.username).toBe("lurker");
-            expect(user.avatar_url).toBe("https://www.golenbock.com/wp-content/uploads/2015/01/placeholder-user.png");
+          expect(typeof user.name).toBe("string");
+          expect(typeof user.username).toBe("string");
+          expect(typeof user.avatar_url).toBe("string");
+          expect(user.name).toBe("do_nothing");
+          expect(user.username).toBe("lurker");
+          expect(user.avatar_url).toBe(
+            "https://www.golenbock.com/wp-content/uploads/2015/01/placeholder-user.png"
+          );
         });
     });
-    test("responds with 404 when endpoint doesn't exist", () => {
+    test("responds with 404 when user doesn't exist", () => {
       return request(app)
         .get("/api/users/ilovecats")
         .expect(404)
@@ -458,3 +549,5 @@ describe("/api/users/:username", () => {
     });
   });
 });
+
+
