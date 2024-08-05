@@ -5,6 +5,9 @@ const commentsRouter = require('./routes/comments.router');
 const topicsRouter = require('./routes/topics.router');
 const usersRouter = require('./routes/users.router');
 const {getEndpoints} = require('./controllers/topics.controllers')
+const cors = require('cors');
+app.use(cors());
+
 
 app.use(express.json())
 
