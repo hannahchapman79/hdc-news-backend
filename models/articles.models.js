@@ -39,7 +39,7 @@ exports.selectArticleById = (article_id) => {
     });
 };
 
-exports.selectArticles = (sort_by = "created_at", order = "desc", topic) => {
+exports.selectArticles = (sort_by = "created_at", order = "desc", topic, limit = 10, p = 1) => {
   const validSortBys = [
     "article_id",
     "title",
@@ -49,8 +49,19 @@ exports.selectArticles = (sort_by = "created_at", order = "desc", topic) => {
     "votes",
     "article_img_url",
     "comment_count",
+    "limit",
+    "p"
   ];
   const validOrders = ["desc", "asc", "DESC", "ASC"];
+  const offset = (p - 1) * limit;
+
+  if (!limit || limit <= 0) {
+    limit = 10;
+  }
+
+  if (p < 0) {
+    return Promise.reject({ status: 400, message: "bad request" });
+  }
 
   if (!validOrders.includes(order)) {
     return Promise.reject({ status: 400, message: "bad request" });
@@ -58,7 +69,14 @@ exports.selectArticles = (sort_by = "created_at", order = "desc", topic) => {
 
   if (!validSortBys.includes(sort_by)) {
     return Promise.reject({ status: 400, message: "bad request" });
-  } 
+  }
+
+  if (isNaN(p) || isNaN(limit)) {
+    return Promise.reject({
+      status: 400,
+      message: "bad request",
+    });
+  }
 
   else {
     let sqlString = `
@@ -81,23 +99,28 @@ exports.selectArticles = (sort_by = "created_at", order = "desc", topic) => {
     )
     SELECT * FROM article_counts`
 
-  if (topic) {
-    sqlString += ` WHERE topic = '${topic}'`;
-  }
+    if (topic) {
+      sqlString += ` WHERE topic = '${topic}'`;
+    }
 
-  sqlString += ` ORDER BY ${sort_by} ${order};`;
+    sqlString += ` ORDER BY ${sort_by} ${order}`;
+
+    sqlString += ` limit ${limit} offset ${offset};`;
 
     return db.query(sqlString).then((result) => {
       if (result.rows.length === 0) {
         return checkTopicExists(topic).then((exists) => {
-          if (!exists) {
+          if (topic && !exists) {
             return Promise.reject({
               status: 404,
               message: `topic does not exist`,
             });
           }
           else {
-            return [];
+            return Promise.reject({
+              status: 404,
+              message: `articles not found`,
+            });
           }
         });
       }

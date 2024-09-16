@@ -148,11 +148,93 @@ describe("/api/articles", () => {
           expect(response.body.message).toBe("topic does not exist");
         });
     });
-    test("responds with empty array if topic exists but doesn't have any articles", () => {
+    test("responds with articles not found if topic exists but doesn't have any articles", () => {
       return request(app)
         .get("/api/articles?topic=paper")
         .then((response) => {
-          expect(response.body.articles).toEqual([]);
+          expect(404)
+          expect(response.body.message).toBe("articles not found");
+        });
+    });
+    test("responds with a default limit of 10 articles", () => {
+      return request(app)
+        .get("/api/articles")
+        .then((response) => {
+          expect(200)
+          expect(response.body.articles.length).toEqual(10);
+        });
+    });
+    test("responds with a limit of 5 articles", () => {
+      return request(app)
+        .get("/api/articles?limit=5")
+        .then((response) => {
+          expect(200)
+          expect(response.body.articles.length).toEqual(5);
+        });
+    });
+    test("responds with a limit of 10 articles when provided a query of limit and no specific value", () => {
+      return request(app)
+        .get("/api/articles?limit=")
+        .then((response) => {
+          expect(200)
+          expect(response.body.articles.length).toEqual(10);
+        });
+    });
+    test("responds with a limit of 10 articles on page 2", () => {
+      return request(app)
+        .get("/api/articles?sort_by=article_id&order=asc&limit=10&p=2")
+        .then((response) => {
+          expect(200)
+          expect(response.body.articles[0].article_id).toEqual(11);
+        });
+    });
+    test("responds with the total count of articles", () => {
+      return request(app)
+        .get("/api/articles?limit=10&p=1")
+        .then((response) => {
+          expect(200)
+          expect(response.body.articles.length).toEqual(10);
+          expect(response.body.totalCount).toEqual(10)
+        });
+    });
+    test("responds with bad request when user inputs invalid limit", () => {
+      return request(app)
+        .get("/api/articles?&limit=abc")
+        .then((response) => {
+          expect(400)
+          expect(response.body.message).toEqual("bad request");
+        });
+    });
+    test("responds with bad request when user inputs invalid page", () => {
+      return request(app)
+        .get("/api/articles?p=-4")
+        .then((response) => {
+          expect(400)
+          expect(response.body.message).toEqual("bad request");
+        });
+    });
+    test("responds with bad request when user inputs invalid page", () => {
+      return request(app)
+        .get("/api/articles?p=abc")
+        .then((response) => {
+          expect(400)
+          expect(response.body.message).toEqual("bad request");
+        });
+    });
+    test("responds with not found when user inputs a page with no articles", () => {
+      return request(app)
+        .get("/api/articles?p=9")
+        .then((response) => {
+          expect(404)
+          expect(response.body.message).toEqual("articles not found");
+        });
+    });
+    test("responds with a default limit of 10 articles when a limit of 0 or below is specified", () => {
+      return request(app)
+        .get("/api/articles?limit=-5")
+        .then((response) => {
+          expect(200)
+          expect(response.body.articles.length).toEqual(10);
         });
     });
   });
@@ -178,7 +260,7 @@ describe("/api/articles/:articles_id", () => {
         expect(article.topic).toBe("mitch");
         expect(article.author).toBe("butter_bridge");
         expect(article.body).toBe("I find this existence challenging");
-        expect(article.created_at).toBe("2020-07-09T20:11:00.000Z");
+        expect(article.created_at).toBe("2020-07-09T13:11:00.000Z");
         expect(article.votes).toBe(100);
         expect(article.article_img_url).toBe(
           "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700"

@@ -15,9 +15,12 @@ exports.getArticles = (req, res, next) => {
   const {sort_by} = req.query;
   const {order} = req.query;
   const {topic} = req.query;
-    selectArticles(sort_by, order, topic)
+  const {limit} = req.query;
+  const {p} = req.query;
+    selectArticles(sort_by, order, topic, limit, p)
     .then((articles) => {
-        res.status(200).send({ articles });
+      const totalCount = articles.length;
+        res.status(200).send({ articles, totalCount });
       })
       .catch((err) => {
         next(err);
