@@ -1,10 +1,10 @@
-# Backend Northcoders News
+# Backend HDC News
 
 Hosted version: https://be-nc-news-flqs.onrender.com
 
 ## Description
 
-This project is the backend for a news application, including both the API and database. The API is designed to access application data programmatically, mimicing the construction of a real-world backend service (similar to Reddit) that supports front-end architecture. This project was developed as part of the Northcoders software development bootcamp.
+This project is the backend for a news application, including both the API and database. The API is designed to access application data programmatically, mimicking the construction of a real-world backend service (similar to Reddit) that supports front-end architecture. 
 
 ## Getting Started
 
